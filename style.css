@@ -1,0 +1,120 @@
+:root {
+  --default: #282828;
+  --title: #bfaf4f;
+  --button:#efefef;
+  --display: #9fa79f;
+  --red: #ff4f6f;
+  --orange: #ef9f00;
+  --green: #6fcf8f;
+  --blue: #6fafef;
+  --border0: #6faf6f9f;
+  --border1: #2f6f2f;
+  --shadow0: #5f685f;
+  --shadow1: #7f887f;
+  --shadow2: #9fa89f;
+  --shadow3: #cfd8cf;
+}
+
+html {
+  box-sizing: border-box;
+  font-size: 16px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: monospace;
+  color: var(--default);
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#case {
+  background: repeating-linear-gradient(#1f1f1f 0px, #1f1f1f 1px, #3f3f3f 1px, #3f3f3f 3px);
+  width: 320px;
+  min-width: 320px;
+  height: 520px;
+  min-height: 520px;
+  border: 7px outset var(--border0);
+  border-radius: 16px;
+  outline: 2px ridge var(--shadow2);
+  outline-offset: 1px;
+  box-shadow: 80px 40px 50px 0px var(--shadow0),
+  100px 60px 70px 10px var(--shadow1),
+  120px 80px 90px 20px var(--shadow2),
+  160px 120px 120px 50px var(--shadow3);
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+h1 {
+  font-style: italic;
+  margin: 0.65rem 0;
+  color: var(--title);
+}
+
+#display {
+  border: 4px inset var(--border1);
+  background-color: var(--display);
+  width: 95%;
+  height: 90px;
+  text-align: right;
+}
+
+#prev-input {
+  height: 40px;
+  padding-right: 0.5rem;
+}
+
+#curr-input {
+  font-size: 2.2rem;
+  letter-spacing: -0.05rem;
+  padding-right: 0.5rem;
+}
+
+#keypad {
+  width: 95%;
+  height: 300px;
+  margin-top: auto;
+  margin-bottom: 1rem;
+  display: grid;
+  gap: 4px;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+}
+
+button:first-of-type {
+  grid-column-start: 2;
+}
+
+button {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: var(--button);
+  border-radius: 16px 9px;
+}
+
+.red {
+  background-color: var(--red);
+}
+
+.orange {
+  background-color: var(--orange);
+}
+
+.green {
+  background-color: var(--green);
+}
+
+.blue {
+  background-color: var(--blue);
+}
