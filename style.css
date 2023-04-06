@@ -1,4 +1,5 @@
 :root {
+  --digitsize: 2.2rem;
   --default: #282828;
   --title: #bfaf4f;
   --button:#efefef;
@@ -71,13 +72,13 @@ h1 {
   text-align: right;
 }
 
-#prev-input {
+#prev-output {
   height: 40px;
   padding-right: 0.5rem;
 }
 
-#curr-input {
-  font-size: 2.2rem;
+#curr-output {
+  font-size: var(--digitsize);
   letter-spacing: -0.05rem;
   padding-right: 0.5rem;
 }
@@ -92,8 +93,9 @@ h1 {
   grid-template-columns: 1fr 1fr 1fr 1fr;
 }
 
-button:first-of-type {
-  grid-column-start: 2;
+button[data-key = "NumpadEnter"] {
+  grid-column: 4;
+  grid-row: 5 / 7;
 }
 
 button {
