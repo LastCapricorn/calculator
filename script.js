@@ -3,42 +3,20 @@
 const buttons = document.querySelectorAll('button');
 const output1 = document.querySelector('#curr-output');
 const output2 = document.querySelector('#prev-output');
+
 const calc = {
   '+' : (prev, curr) => prev + curr,
   '-' : (prev, curr) => prev - curr,
   '*' : (prev, curr) => prev * curr,
-  '/' : (prev, curr) =>prev / curr,
-  '%' : (curr) => 1 / curr,
+  '/' : (prev, curr) => prev / curr,
+  '%' : (curr) => curr / 100,
   square : (base) => base ** 2,
   root : (radicand) => Math.sqrt(radicand),
 }
-let [firstOperand, secondOperand] = [[], []];
-let [currentOperator, nextOperator] = [null, null];
-let [periodFlag, zeroFlag, resultFlag] = [false, true, false];
 
-function operate() {
-  let numFirst = Number(firstOperand.join(''));
-  let numSecond = Number(secondOperand.join(''));
-  firstOperand = (calc[currentOperator](numFirst,numSecond)).toString().split('');
-  secondOperand = [];
-  currentOperator = nextOperator;
-  nextOperator = null;
-  resultFlag = true;
-  if (firstOperand.length > 18) {
-    Number(firstOperand.join('')).toPrecision(18).split('');
-  }
-  setDisplayOutput();
-}
-
-function handleOperators(opr) {
-  if (!currentOperator || !secondOperand.length) {
-    currentOperator = opr;
-  } else if (!nextOperator) {
-    nextOperator = opr;
-    operate();
-  }  
-  periodFlag = false;
-}  
+let [firstOperand, secondOperand, replacementOperand] = [[], [], []];
+let [currentOperator, nextOperator, replacementOperator] = [null, null, null];
+let [zeroFlag, periodFlag, resultFlag] = [true, false, false];
 
 function handleNumerals(operand) {
   if (!firstOperand.length) {
@@ -55,13 +33,16 @@ function handleNumerals(operand) {
       periodFlag = true;
       firstOperand = ['0', '.'];
       resultFlag = false;
+      replacementOperator = null;
     } else if (resultFlag) {
       if (operand === '0') {
-        firstOperand = ['0', '.'];
+        firstOperand = [];
         periodFlag = true;
+        replacementOperator = null;
       } else {
         firstOperand = [operand];
         periodFlag = false;
+        replacementOperator = null;
       }
       resultFlag = false;
     } else {
@@ -88,8 +69,51 @@ function handleNumerals(operand) {
     } else {
       secondOperand.push(operand);
     }
-  zeroFlag = false;
-  } 
+    zeroFlag = false;
+  }
+  replacementOperand = firstOperand;
+}
+
+function operate() {
+  if (!firstOperand.length) return;
+  if (!currentOperator) {
+    if (!replacementOperator) return;
+    currentOperator = replacementOperator
+  }
+  if (!secondOperand.length && replacementOperand) {
+    secondOperand = replacementOperand;
+    currentOperator = replacementOperator;
+  } else {
+    replacementOperand = secondOperand;
+  }
+  let numFirst = Number(firstOperand.join(''));
+  let numSecond = Number(secondOperand.join(''));
+  firstOperand = (calc[currentOperator](numFirst,numSecond)).toString().split('');
+  secondOperand = [];
+  currentOperator = nextOperator;
+  nextOperator = null;
+  resultFlag = true;
+  trimOperand();
+  setDisplayOutput();
+}  
+
+function handleBasicOperators(opr) {
+  if (!currentOperator || !secondOperand.length) {
+    currentOperator = opr;
+  } else if (!nextOperator) {
+    nextOperator = opr;
+    operate();
+  }  
+  periodFlag = false;
+  replacementOperator = currentOperator;
+}
+
+function trimOperand() {
+  if (firstOperand.length > 19) {
+    let size = 19;
+    if (firstOperand[0] == '0' || firstOperand[0] ==  '-') size = 18;
+    firstOperand = Number(firstOperand.join('')).toFixed(size).split('');
+  }  
 }
 
 function toggleNegative() {
@@ -98,14 +122,17 @@ function toggleNegative() {
   } else if (firstOperand.length) {
     firstOperand[0] === '-' ? firstOperand.shift() : firstOperand.unshift('-');
   }
+  trimOperand();
 }
 
 function setFontSize(digitCount) {
+  if (digitCount <= 12) document.documentElement.style.setProperty('--digitsize', '2.2rem');
   if (digitCount > 12) document.documentElement.style.setProperty('--digitsize', '2.0rem');
   if (digitCount > 14) document.documentElement.style.setProperty('--digitsize', '1.8rem');
   if (digitCount > 16) document.documentElement.style.setProperty('--digitsize', '1.6rem');
-  if (digitCount <= 12) document.documentElement.style.setProperty('--digitsize', '2.2rem');
+  if (digitCount >= 18) document.documentElement.style.setProperty('--digitsize', '1.4rem');
 }
+
 function setDisplayOutput() {
   if (!currentOperator) {
     setFontSize(firstOperand.length);
@@ -129,7 +156,7 @@ function handleKeys(ev) {
       handleNumerals(pressedKey.value);
       break;
     case '+': case '-': case '*': case '/':
-      handleOperators(pressedKey.value);
+      handleBasicOperators(pressedKey.value);
       break;
     case '%':
       break;
@@ -157,6 +184,8 @@ function handleKeys(ev) {
   console.log('currOpr: ' + currentOperator);
   console.log('secondOpd: ' + secondOperand.join(''));
   console.log('nextOpr: ' + nextOperator);
+  console.log('replaceOpd: ' + replacementOperand.join(''));
+  console.log('replaceOpr: ' + replacementOperator);
   console.log('resultFlag: ' + resultFlag)
   console.log('periodFlag: ' + periodFlag)
   console.log('zeroFlag: ' + zeroFlag);

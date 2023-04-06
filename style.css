@@ -79,7 +79,8 @@ h1 {
 
 #curr-output {
   font-size: var(--digitsize);
-  letter-spacing: -0.05rem;
+  margin-top: 0.4rem;
+  /* letter-spacing: -0.05rem; */
   padding-right: 0.5rem;
 }
 
