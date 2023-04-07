@@ -58,6 +58,11 @@ body {
   align-items: center;
 }
 
+#cover {
+  display: flex;
+  align-items: center;
+}
+
 h1 {
   font-style: italic;
   margin: 0.65rem 0;
