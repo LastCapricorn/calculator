@@ -76,6 +76,19 @@ function handleNumerals(operand) {
   replacementOperand = firstOperand;
 }
 
+function squareAndRoot(opr) {
+  let num;
+  if (secondOperand.length) {
+    num = Number(secondOperand.join(''));
+    secondOperand = (calc[opr](num)).toString().split('');
+  } else if (firstOperand.length) {
+    num = Number(firstOperand.join(''));
+    firstOperand = (calc[opr](num)).toString().split('');
+  }
+  trimOperand();
+  setDisplayOutput();
+}
+
 function operate() {
   if (!firstOperand.length) return;
   if (!currentOperator) {
@@ -217,14 +230,14 @@ function handleKeys(ev) {
     case 'Backslash':
       toggleNegative();
       break;
-    case 'BracketLeft':
-      break;
-    case 'BracketRight':
+    case 'root': case 'square':
+      console.log(pressedKey.value);
+      squareAndRoot(pressedKey.value);
       break;
   }
   setDisplayOutput();
 
-  console.clear();
+  // console.clear();
   console.log('firstOpd: ' + firstOperand.join(''));
   console.log('currOpr: ' + currentOperator);
   console.log('secondOpd: ' + secondOperand.join(''));
