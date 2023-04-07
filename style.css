@@ -1,3 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=Splash&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cutive+Mono&display=swap');
+
 :root {
   --digitsize: 2.2rem;
   --default: #282828;
@@ -30,7 +33,7 @@ html {
 }
 
 body {
-  font-family: monospace;
+  font-family: "Cutive Mono", monospace;
   color: var(--default);
   height: 100vh;
   display: flex;
@@ -59,41 +62,47 @@ body {
 }
 
 #cover {
+  width: 95%;
+  margin-top: 0.6rem;
   display: flex;
+  justify-content: space-around;
   align-items: center;
 }
 
 h1 {
-  font-style: italic;
-  margin: 0.65rem 0;
+  font-family: "Splash", cursive;
+  font-weight: normal;
+  font-size: 2.5rem;
   color: var(--title);
 }
 
 #display {
+  width: 95%;
+  height: 80px;
+  text-align: right;
   border: 4px inset var(--border1);
   background-color: var(--display);
-  width: 95%;
-  height: 90px;
-  text-align: right;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: space-between;
 }
 
 #prev-output {
-  height: 40px;
-  padding-right: 0.5rem;
+  font-size: 1.2rem;
+  height: 22px;
+  padding-right: 0.1rem;
 }
 
 #curr-output {
   font-size: var(--digitsize);
-  margin-top: 0.4rem;
-  /* letter-spacing: -0.05rem; */
-  padding-right: 0.5rem;
+  padding-right: 0.1rem;
 }
 
 #keypad {
   width: 95%;
   height: 300px;
   margin-top: auto;
-  margin-bottom: 1rem;
+  margin-bottom: 0.8rem;
   display: grid;
   gap: 4px;
   grid-template-columns: 1fr 1fr 1fr 1fr;

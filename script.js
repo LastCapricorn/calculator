@@ -181,11 +181,11 @@ function toggleNegative() {
 }
 
 function setFontSize(digitCount) {
-  if (digitCount <= 12) document.documentElement.style.setProperty('--digitsize', '2.2rem');
-  if (digitCount > 12) document.documentElement.style.setProperty('--digitsize', '2.0rem');
-  if (digitCount > 14) document.documentElement.style.setProperty('--digitsize', '1.8rem');
-  if (digitCount > 16) document.documentElement.style.setProperty('--digitsize', '1.6rem');
-  if (digitCount >= 18) document.documentElement.style.setProperty('--digitsize', '1.4rem');
+  if (digitCount <= 13) document.documentElement.style.setProperty('--digitsize', '2.2rem');
+  if (digitCount > 13) document.documentElement.style.setProperty('--digitsize', '1.9rem');
+  if (digitCount > 15) document.documentElement.style.setProperty('--digitsize', '1.7rem');
+  if (digitCount > 17) document.documentElement.style.setProperty('--digitsize', '1.5rem');
+  if (digitCount >= 20) document.documentElement.style.setProperty('--digitsize', '1.3rem');
 }
 
 function setDisplayOutput() {
