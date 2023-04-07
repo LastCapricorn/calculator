@@ -108,6 +108,25 @@ function handleBasicOperators(opr) {
   replacementOperator = currentOperator;
 }
 
+function delInput() {
+  if (resultFlag) {
+    firstOperand = [];
+    replacementOperand = [];
+    replacementOperator = null;
+    [resultFlag, periodFlag, zeroFlag] = [false, false, true];
+  }
+  if (secondOperand.length) {
+    let pf = secondOperand.pop();
+    periodFlag = pf === '.' ? false : periodFlag;
+  } else if (currentOperator) {
+    [currentOperator, replacementOperator] = [null, null]
+    periodFlag = firstOperand.indexOf('.') === -1 ? false : true;
+  } else if (firstOperand.length) {
+    let pf = firstOperand.pop();
+    periodFlag = pf === '.' ? false : periodFlag;
+  }
+}
+
 function trimOperand() {
   if (firstOperand.length > 19) {
     let size = 19;
@@ -166,6 +185,7 @@ function handleKeys(ev) {
     case 'Backspace':
       break;
     case 'Delete':
+      delInput();
       break;
     case 'Escape':
       break;
