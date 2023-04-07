@@ -38,10 +38,12 @@ function handleNumerals(operand) {
       if (operand === '0') {
         firstOperand = [];
         periodFlag = true;
+        zeroFlag = true;
         replacementOperator = null;
       } else {
         firstOperand = [operand];
         periodFlag = false;
+        zeroFlag = false;
         replacementOperator = null;
       }
       resultFlag = false;
@@ -59,13 +61,13 @@ function handleNumerals(operand) {
     }
     secondOperand.push(operand);
   } else {
+    resultFlag = false;
     if (operand === '0') {
-      zeroFlag === true;
       secondOperand.push(operand, '.');
       periodFlag = true;
     } else if (operand === '.') {
       periodFlag = true;
-      secondOperand.push('0', '.');
+      secondOperand.push('0', operand);
     } else {
       secondOperand.push(operand);
     }
@@ -100,6 +102,7 @@ function operate() {
 function handleBasicOperators(opr) {
   if (!currentOperator || !secondOperand.length) {
     currentOperator = opr;
+    resultFlag = false;
   } else if (!nextOperator) {
     nextOperator = opr;
     operate();
@@ -108,20 +111,40 @@ function handleBasicOperators(opr) {
   replacementOperator = currentOperator;
 }
 
+function clearOperation() {
+  [firstOperand, secondOperand, replacementOperand] = [[], [], []];
+  [currentOperator, nextOperator, replacementOperator] = [null, null, null];
+  [zeroFlag, periodFlag, resultFlag] = [true, false, false];
+}
+
+function clearEntry() {
+  if (secondOperand.length) {
+    secondOperand = [];
+    [zeroFlag, periodFlag] = [true, false];
+  }
+  if (currentOperator) return;
+  clearOperation();
+}
+
 function delInput() {
-  if (resultFlag) {
-    firstOperand = [];
-    replacementOperand = [];
-    replacementOperator = null;
-    [resultFlag, periodFlag, zeroFlag] = [false, false, true];
+  if (resultFlag && !currentOperator) {
+    clearOperation();
   }
   if (secondOperand.length) {
+    if (secondOperand.length === 1) {
+      zeroFlag = true;
+    }
     let pf = secondOperand.pop();
     periodFlag = pf === '.' ? false : periodFlag;
   } else if (currentOperator) {
     [currentOperator, replacementOperator] = [null, null]
     periodFlag = firstOperand.indexOf('.') === -1 ? false : true;
+    zeroFlag = true;
+    resultFlag = false;
   } else if (firstOperand.length) {
+    if (firstOperand.length === 1) {
+      zeroFlag = true;
+    }
     let pf = firstOperand.pop();
     periodFlag = pf === '.' ? false : periodFlag;
   }
@@ -183,11 +206,13 @@ function handleKeys(ev) {
       operate();
       break;
     case 'Backspace':
+      clearEntry();
       break;
     case 'Delete':
       delInput();
       break;
     case 'Escape':
+      clearOperation();
       break;
     case 'Backslash':
       toggleNegative();
