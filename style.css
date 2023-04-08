@@ -3,20 +3,15 @@
 
 :root {
   --digitsize: 2.2rem;
-  --default: #282828;
-  --title: #bfaf4f;
-  --button:#efefef;
+  --bodybg: #775737; --default: #282828; --title: #bfaf4f; --button:#efefef;
   --display: #9fa79f;
-  --red: #ff4f6f;
-  --orange: #ef9f00;
-  --green: #6fcf8f;
-  --blue: #6fafef;
-  --border0: #6faf6f9f;
-  --border1: #2f6f2f;
-  --shadow0: #5f685f;
-  --shadow1: #7f887f;
-  --shadow2: #9fa89f;
-  --shadow3: #cfd8cf;
+  --red: #ff4f6f; --orange: #ef9f00; --green: #6fcf8f; --blue: #6fafef;
+  --border0: #6faf6f9f; --border1: #2f6f2f;
+  --shadow0: #402421bf; --shadow1: #4024218f; --shadow2: #4024215f;
+  --shadow3: #4024213f;
+  --graddev0: #022b00; --graddev1: #001f00;
+  --gradbg0: #402421; --gradbg1: #5b3c21; --gradbg2: #624f25;
+  --gradbg3: #301411; --gradbg4: #4b2c11; --gradbg5: #523f15;
 }
 
 html {
@@ -39,17 +34,29 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+  background-color: var(--bodybg);
+  background-size: 24px 12px;
+  background-repeat: repeat;
+  background-image:
+  repeating-linear-gradient(135deg, var(--gradbg0), var(--gradbg1), var(--gradbg2), var(--gradbg1),
+  var(--gradbg0), transparent 16.7%, transparent 63.1%, var(--gradbg0), var(--gradbg1), var(--gradbg2),
+  var(--gradbg1), var(--gradbg0), transparent 83.3%, transparent),
+  repeating-linear-gradient(0deg,transparent, transparent 25%, var(--gradbg3), var(--gradbg4),
+  var(--gradbg5), var(--gradbg4), var(--gradbg3), transparent 75%, transparent),
+  repeating-linear-gradient(135deg, transparent, transparent 29.8%, var(--gradbg0),
+  var(--gradbg1), var(--gradbg2), var(--gradbg1), var(--gradbg0), transparent 50%, transparent,
+  transparent 96.4%, var(--gradbg0));
 }
 
 #case {
-  background: repeating-linear-gradient(#1f1f1f 0px, #1f1f1f 1px, #3f3f3f 1px, #3f3f3f 3px);
+  background-image: repeating-linear-gradient(var(--graddev0) 0px, var(--graddev0) 2px, var(--graddev1) 2px, var(--graddev1) 4px);
   width: 320px;
   min-width: 320px;
   height: 520px;
   min-height: 520px;
   border: 7px outset var(--border0);
   border-radius: 16px;
-  outline: 2px ridge var(--shadow2);
+  outline: 2px ridge var(--shadow3);
   outline-offset: 1px;
   box-shadow: 80px 40px 50px 0px var(--shadow0),
   100px 60px 70px 10px var(--shadow1),
