@@ -14,8 +14,8 @@ const calc = {
   root : (radicand) => Math.sqrt(radicand),
 }
 
-let [firstOperand, secondOperand, replacementOperand] = [[], [], []];
-let [currentOperator, nextOperator, replacementOperator] = [null, null, null];
+let [firstOperand, secondOperand, resumeOperand] = [[], [], []];
+let [currentOperator, nextOperator, resumeOperator] = [null, null, null];
 let [zeroFlag, periodFlag, resultFlag] = [true, false, false];
 
 function handleNumerals(operand) {
@@ -33,18 +33,18 @@ function handleNumerals(operand) {
       periodFlag = true;
       firstOperand = ['0', '.'];
       resultFlag = false;
-      replacementOperator = null;
+      resumeOperator = null;
     } else if (resultFlag) {
       if (operand === '0') {
         firstOperand = [];
         periodFlag = true;
         zeroFlag = true;
-        replacementOperator = null;
+        resumeOperator = null;
       } else {
         firstOperand = [operand];
         periodFlag = false;
         zeroFlag = false;
-        replacementOperator = null;
+        resumeOperator = null;
       }
       resultFlag = false;
     } else {
@@ -73,18 +73,19 @@ function handleNumerals(operand) {
     }
     zeroFlag = false;
   }
-  replacementOperand = firstOperand;
+  resumeOperand = firstOperand;
 }
 
 function squareAndRoot(opr) {
   let num;
   if (secondOperand.length) {
-    num = Number(secondOperand.join(''));
-    secondOperand = (calc[opr](num)).toString().split('');
-  } else if (firstOperand.length) {
-    num = Number(firstOperand.join(''));
-    firstOperand = (calc[opr](num)).toString().split('');
+    operate();
+  } else if (firstOperand.length && currentOperator) {
+    currentOperator = null;
   }
+  resultFlag = true;
+  num = Number(firstOperand.join(''));
+  firstOperand = (calc[opr](num)).toString().split('');
   trimOperand();
   setDisplayOutput();
 }
@@ -92,14 +93,14 @@ function squareAndRoot(opr) {
 function operate() {
   if (!firstOperand.length) return;
   if (!currentOperator) {
-    if (!replacementOperator) return;
-    currentOperator = replacementOperator
+    if (!resumeOperator) return;
+    currentOperator = resumeOperator
   }
-  if (!secondOperand.length && replacementOperand) {
-    secondOperand = replacementOperand;
-    currentOperator = replacementOperator;
+  if (!secondOperand.length && resumeOperand) {
+    secondOperand = resumeOperand;
+    currentOperator = resumeOperator;
   } else {
-    replacementOperand = secondOperand;
+    resumeOperand = secondOperand;
   }
   let numFirst = Number(firstOperand.join(''));
   let numSecond = Number(secondOperand.join(''));
@@ -121,12 +122,12 @@ function handleBasicOperators(opr) {
     operate();
   }  
   periodFlag = false;
-  replacementOperator = currentOperator;
+  resumeOperator = currentOperator;
 }
 
 function clearOperation() {
-  [firstOperand, secondOperand, replacementOperand] = [[], [], []];
-  [currentOperator, nextOperator, replacementOperator] = [null, null, null];
+  [firstOperand, secondOperand, resumeOperand] = [[], [], []];
+  [currentOperator, nextOperator, resumeOperator] = [null, null, null];
   [zeroFlag, periodFlag, resultFlag] = [true, false, false];
 }
 
@@ -150,7 +151,7 @@ function delInput() {
     let pf = secondOperand.pop();
     periodFlag = pf === '.' ? false : periodFlag;
   } else if (currentOperator) {
-    [currentOperator, replacementOperator] = [null, null]
+    [currentOperator, resumeOperator] = [null, null]
     periodFlag = firstOperand.indexOf('.') === -1 ? false : true;
     zeroFlag = true;
     resultFlag = false;
@@ -214,6 +215,7 @@ function handleKeys(ev) {
       handleBasicOperators(pressedKey.value);
       break;
     case '%':
+      handlePercent(pressedKey.value);
       break;
     case 'Enter':
       operate();
@@ -231,22 +233,21 @@ function handleKeys(ev) {
       toggleNegative();
       break;
     case 'root': case 'square':
-      console.log(pressedKey.value);
       squareAndRoot(pressedKey.value);
       break;
   }
   setDisplayOutput();
 
-  // console.clear();
+  console.clear();
   console.log('firstOpd: ' + firstOperand.join(''));
-  console.log('currOpr: ' + currentOperator);
   console.log('secondOpd: ' + secondOperand.join(''));
+  console.log('replaceOpd: ' + resumeOperand.join(''));
+  console.log('currOpr: ' + currentOperator);
   console.log('nextOpr: ' + nextOperator);
-  console.log('replaceOpd: ' + replacementOperand.join(''));
-  console.log('replaceOpr: ' + replacementOperator);
-  console.log('resultFlag: ' + resultFlag)
-  console.log('periodFlag: ' + periodFlag)
+  console.log('replaceOpr: ' + resumeOperator);
   console.log('zeroFlag: ' + zeroFlag);
+  console.log('periodFlag: ' + periodFlag)
+  console.log('resultFlag: ' + resultFlag)
 }
 
 document.addEventListener('keydown', handleKeys);
