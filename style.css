@@ -2,7 +2,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Cutive+Mono&display=swap');
 
 :root {
-  --digitsize: 2.2rem;
+  --digitsize1: 2.2rem; --digitsize2: 1.2rem;
   --bodybg: #775737; --default: #282828; --title: #bfaf4f; --button:#efefef;
   --display: #9fa79f;
   --red: #ff4f6f; --orange: #ef9f00; --green: #6fcf8f; --blue: #6fafef;
@@ -96,14 +96,19 @@ h1 {
   justify-content: space-between;
 }
 
+#display.error {
+  text-align: left;
+}
+
 #prev-output {
-  font-size: 1.2rem;
+  font-size: var(--digitsize2);
   height: 22px;
+  margin-top: 0.2rem;
   padding-right: 0.1rem;
 }
 
 #curr-output {
-  font-size: var(--digitsize);
+  font-size: var(--digitsize1);
   padding-right: 0.1rem;
 }
 
