@@ -4,6 +4,25 @@ const buttons = document.querySelectorAll('button');
 const output1 = document.querySelector('#curr-output');
 const output2 = document.querySelector('#prev-output');
 
+let [firstOperand, secondOperand, resumeOperand] = [[], [], []];
+let [currentOperator, nextOperator, resumeOperator] = [null, null, null];
+let [zeroFlag, periodFlag, resultFlag] = [true, false, false];
+
+const funny = {
+  zero : {
+    'name': 'funny error no. 42',
+    'message': "Nobody shares the pie with anybody, there's no pie at all!"
+  },
+  negative : {
+    'name': 'funny error no. 6.48074069840786:',
+    'message': "You must be a dentist if you try pulling bad roots!"
+  },
+  limit : {
+    'name': 'funny error Ritchie Rich',
+    'message': "You're counting money, right?"
+  },
+}
+
 const calc = {
   '+' : (prev, curr) => prev + curr,
   '-' : (prev, curr) => prev - curr,
@@ -13,10 +32,6 @@ const calc = {
   square : (base) => base ** 2,
   root : (radicand) => Math.sqrt(radicand),
 }
-
-let [firstOperand, secondOperand, resumeOperand] = [[], [], []];
-let [currentOperator, nextOperator, resumeOperator] = [null, null, null];
-let [zeroFlag, periodFlag, resultFlag] = [true, false, false];
 
 function handleNumerals(operand) {
   if (!firstOperand.length) {
@@ -76,6 +91,27 @@ function handleNumerals(operand) {
   resumeOperand = firstOperand;
 }
 
+function handlePercent() {
+  let numSecond = calc['%'](Number(firstOperand.join('')));
+  if (secondOperand.length && currentOperator === '+') {
+    currentOperator = '*';
+    resumeOperator = '*';
+    secondOperand = (1 + numSecond).toString().split('');
+    operate();
+  } else if (secondOperand.length && currentOperator === '-') {
+    currentOperator = '*';
+    resumeOperator = '*';
+    secondOperand = (1 - numSecond).toString().split('');
+    operate();
+  } else if (secondOperand.length) {
+    secondOperand = calc['%'](numSecond).toString().split('');
+    operate();
+  } else {
+    firstOperand = calc['%'](Number(firstOperand.join(''))).toString().split('');
+  }
+  resultFlag = true;
+}
+
 function squareAndRoot(opr) {
   let num;
   if (secondOperand.length) {
@@ -85,12 +121,19 @@ function squareAndRoot(opr) {
   }
   resultFlag = true;
   num = Number(firstOperand.join(''));
-  firstOperand = (calc[opr](num)).toString().split('');
-  trimOperand();
-  setDisplayOutput();
+  try {
+    if (num < 0 && opr === 'root') throw  funny.negative ;
+    firstOperand = (calc[opr](num)).toString().split('');
+    trimOperand();
+    setDisplayOutput();
+  } catch(err) {
+    console.log(err.name);
+    console.log(err.message);
+  }
 }
 
 function operate() {
+  if (currentOperator === '%') handlePercent();
   if (!firstOperand.length) return;
   if (!currentOperator) {
     if (!resumeOperator) return;
@@ -104,13 +147,19 @@ function operate() {
   }
   let numFirst = Number(firstOperand.join(''));
   let numSecond = Number(secondOperand.join(''));
-  firstOperand = (calc[currentOperator](numFirst,numSecond)).toString().split('');
-  secondOperand = [];
-  currentOperator = nextOperator;
-  nextOperator = null;
-  resultFlag = true;
-  trimOperand();
-  setDisplayOutput();
+  try {
+    if (numSecond === 0 && currentOperator === '/') throw funny.zero;
+    firstOperand = (calc[currentOperator](numFirst,numSecond)).toString().split('');
+    secondOperand = [];
+    currentOperator = nextOperator;
+    nextOperator = null;
+    resultFlag = true;
+    trimOperand();
+    setDisplayOutput();
+  } catch(err) {
+    console.log(err.name);
+    console.log(err.message);
+  }
 }  
 
 function handleBasicOperators(opr) {
@@ -125,29 +174,39 @@ function handleBasicOperators(opr) {
   resumeOperator = currentOperator;
 }
 
+function toggleNegative() {
+  if(secondOperand.length) {
+    secondOperand[0] === '-' ? secondOperand.shift() : secondOperand.unshift('-');
+  } else if (firstOperand.length) {
+    firstOperand[0] === '-' ? firstOperand.shift() : firstOperand.unshift('-');
+  }
+  trimOperand();
+  setDisplayOutput();
+}
+
 function clearOperation() {
   [firstOperand, secondOperand, resumeOperand] = [[], [], []];
   [currentOperator, nextOperator, resumeOperator] = [null, null, null];
   [zeroFlag, periodFlag, resultFlag] = [true, false, false];
-}
+}  
 
 function clearEntry() {
   if (secondOperand.length) {
     secondOperand = [];
     [zeroFlag, periodFlag] = [true, false];
-  }
+  }  
   if (currentOperator) return;
   clearOperation();
-}
+}  
 
 function delInput() {
   if (resultFlag && !currentOperator) {
     clearOperation();
-  }
+  }  
   if (secondOperand.length) {
     if (secondOperand.length === 1) {
       zeroFlag = true;
-    }
+    }  
     let pf = secondOperand.pop();
     periodFlag = pf === '.' ? false : periodFlag;
   } else if (currentOperator) {
@@ -158,11 +217,11 @@ function delInput() {
   } else if (firstOperand.length) {
     if (firstOperand.length === 1) {
       zeroFlag = true;
-    }
+    }  
     let pf = firstOperand.pop();
     periodFlag = pf === '.' ? false : periodFlag;
-  }
-}
+  }  
+}  
 
 function trimOperand() {
   if (firstOperand.length > 19) {
@@ -170,15 +229,6 @@ function trimOperand() {
     if (firstOperand[0] == '0' || firstOperand[0] ==  '-') size = 18;
     firstOperand = Number(firstOperand.join('')).toFixed(size).split('');
   }  
-}
-
-function toggleNegative() {
-  if(secondOperand.length) {
-    secondOperand[0] === '-' ? secondOperand.shift() : secondOperand.unshift('-');
-  } else if (firstOperand.length) {
-    firstOperand[0] === '-' ? firstOperand.shift() : firstOperand.unshift('-');
-  }
-  trimOperand();
 }
 
 function setFontSize(digitCount) {
@@ -209,13 +259,19 @@ function handleKeys(ev) {
     case '1': case '2': case '3': case '4':
     case '5': case '6': case '7': case '8':
     case '9': case '0': case '.':
-      handleNumerals(pressedKey.value);
+      try {
+        if (output1.textContent.length > 17 && pressedKey.value !== '.') throw funny.limit;
+        handleNumerals(pressedKey.value);
+      } catch(err) {
+        console.log(err.name);
+        console.log(err.message);
+      }
       break;
     case '+': case '-': case '*': case '/':
       handleBasicOperators(pressedKey.value);
       break;
     case '%':
-      handlePercent(pressedKey.value);
+      handlePercent();
       break;
     case 'Enter':
       operate();
@@ -235,9 +291,8 @@ function handleKeys(ev) {
     case 'root': case 'square':
       squareAndRoot(pressedKey.value);
       break;
-  }
-  setDisplayOutput();
-
+    }
+    setDisplayOutput();
   console.clear();
   console.log('firstOpd: ' + firstOperand.join(''));
   console.log('secondOpd: ' + secondOperand.join(''));
