@@ -1,5 +1,38 @@
 'use strict';
 
+const calc = {
+  '+' : (prev, curr) => prev + curr,
+  '-' : (prev, curr) => prev - curr,
+  '*' : (prev, curr) => prev * curr,
+  '/' : (prev, curr) => prev / curr,
+  '%' : (curr) => curr / 100,
+  square : (base) => base ** 2,
+  root : (radicand) => Math.sqrt(radicand),
+}
+
+const funny = {
+  zero : {
+    name: 'funny error "no. 42":',
+    message: "Nobody shares the pie with anybody, there's no pie at all!"
+  },
+  negative : {
+    name: 'funny error "no. 6.48074069840786":',
+    message: "You must be a dentist if you try pulling bad roots!"
+  },
+  richLimit : {
+    name: 'funny error "Ritchie Rich":',
+    message : "You're counting money, right?"
+  },
+  poorLimit : {
+    name : 'funny error "Trading Places":',
+    message : "Do you hear Randolph and Mortimer crying?"
+  },
+  improbabilityLimit : {
+    name : 'funny error "ask Deep Thought":',
+    message : "You seem to be looking for a question, not an answer."
+  },
+}
+
 const buttons = document.querySelectorAll('button');
 const errorMessageAlignment = document.querySelector('#display');
 const output1 = document.querySelector('#curr-output');
@@ -9,37 +42,12 @@ let [firstOperand, secondOperand, resumeOperand] = [[], [], []];
 let [currentOperator, nextOperator, resumeOperator] = [null, null, null];
 let [zeroFlag, periodFlag, resultFlag, errorFlag] = [true, false, false, false];
 
-const funny = {
-  zero : {
-    'name': 'funny error "no. 42":',
-    'message': "Nobody shares the pie with anybody, there's no pie at all!"
-  },
-  negative : {
-    'name': 'funny error "no. 6.48074069840786":',
-    'message': "You must be a dentist if you try pulling bad roots!"
-  },
-  richLimit : {
-    'name': 'funny error "Ritchie Rich":',
-    'message' : "You're counting money, right?"
-  },
-  poorLimit : {
-    'name' : 'funny error "Trading Places":',
-    'message' : "Do you hear Randolph and Mortimer crying?"
-  },
-  improbabilityLimit : {
-    'name' : 'funny error "ask Deep Thought":',
-    'message' : "You seem to be looking for a question, not an answer."
-  },
-}
-
-const calc = {
-  '+' : (prev, curr) => prev + curr,
-  '-' : (prev, curr) => prev - curr,
-  '*' : (prev, curr) => prev * curr,
-  '/' : (prev, curr) => prev / curr,
-  '%' : (curr) => curr / 100,
-  square : (base) => base ** 2,
-  root : (radicand) => Math.sqrt(radicand),
+function displayError(err) {
+  errorMessageAlignment.classList.add('error');
+  document.documentElement.style.setProperty('--digitsize1', '1.0rem');
+  document.documentElement.style.setProperty('--digitsize2', '1.0rem');
+  output2.textContent = err.name;
+  output1.textContent = err.message;
 }
 
 function handleNumerals(operand) {
@@ -61,13 +69,11 @@ function handleNumerals(operand) {
     } else if (resultFlag) {
       if (operand === '0') {
         firstOperand = [];
-        periodFlag = true;
-        zeroFlag = true;
+        [periodFlag, zeroFlag] = [true, true];
         resumeOperator = null;
       } else {
         firstOperand = [operand];
-        periodFlag = false;
-        zeroFlag = false;
+        [periodFlag, zeroFlag] = [false, false];
         resumeOperator = null;
       }
       resultFlag = false;
@@ -90,8 +96,8 @@ function handleNumerals(operand) {
       secondOperand.push(operand, '.');
       periodFlag = true;
     } else if (operand === '.') {
-      periodFlag = true;
       secondOperand.push('0', operand);
+      periodFlag = true;
     } else {
       secondOperand.push(operand);
     }
@@ -102,42 +108,32 @@ function handleNumerals(operand) {
 
 function handlePercent() {
   let numSecond = calc['%'](Number(secondOperand.join('')));
-  if (secondOperand.length && currentOperator === '+') {
-    currentOperator = '*';
-    resumeOperator = '*';
-    secondOperand = (1 + numSecond).toString().split('');
-    operate();
-  } else if (secondOperand.length && currentOperator === '-') {
-    currentOperator = '*';
-    resumeOperator = '*';
-    secondOperand = (1 - numSecond).toString().split('');
-    operate();
-  } else if (secondOperand.length) {
+  if (secondOperand.length && (currentOperator === '*' || currentOperator === '/')) {
     secondOperand = numSecond.toString().split('');
-    operate();
+  } else if (secondOperand.length) {
+    if (currentOperator === '+') {
+      secondOperand = (1 + numSecond).toString().split('');
+    } else if (currentOperator === '-') {
+      secondOperand = (1 - numSecond).toString().split('');
+    }
+    currentOperator = '*';
+    resumeOperator = '*';
   } else {
     firstOperand = calc['%'](Number(firstOperand.join(''))).toString().split('');
   }
+  operate();
   resultFlag = true;
-}
-
-function displayError(err) {
-  errorMessageAlignment.classList.add('error');
-  document.documentElement.style.setProperty('--digitsize1', '1.0rem');
-  document.documentElement.style.setProperty('--digitsize2', '1.0rem');
-  output2.textContent = err.name;
-  output1.textContent = err.message;
+  trimOperand();
 }
 
 function squareAndRoot(opr) {
-  let num;
   if (secondOperand.length) {
     operate();
   } else if (firstOperand.length && currentOperator) {
     currentOperator = null;
   }
   resultFlag = true;
-  num = Number(firstOperand.join(''));
+  let num = Number(firstOperand.join(''));
   try {
     if (num < 0 && opr === 'root') throw  funny.negative ;
     firstOperand = (calc[opr](num)).toString().split('');
@@ -234,9 +230,8 @@ function delInput() {
     periodFlag = pf === '.' ? false : periodFlag;
   } else if (currentOperator) {
     [currentOperator, resumeOperator] = [null, null]
+    [zeroFlag, resultFlag] = [true, false];
     periodFlag = firstOperand.indexOf('.') === -1 ? false : true;
-    zeroFlag = true;
-    resultFlag = false;
   } else if (firstOperand.length) {
     if (firstOperand.length === 1) {
       zeroFlag = true;
@@ -247,12 +242,10 @@ function delInput() {
 }  
 
 function trimOperand() {
-  if (firstOperand.length > 19) {
-    let size = 20;
-    // if (firstOperand[0] == '0' || firstOperand[0] ==  '-') size = 18;
-    while (firstOperand.length > 20) {
-      firstOperand = Number(firstOperand.join('')).toFixed(size-1).split('');
-    }
+  if (firstOperand.length > 16) {
+    let size = 16;
+    if (firstOperand[0] == '0' || firstOperand[0] ==  '-') size = 15;
+    firstOperand = Number(firstOperand.join('')).toPrecision(size).split('');
   }  
 }
 
@@ -261,7 +254,8 @@ function setFontSize(digitCount) {
   if (digitCount > 13) document.documentElement.style.setProperty('--digitsize1', '1.9rem');
   if (digitCount > 15) document.documentElement.style.setProperty('--digitsize1', '1.7rem');
   if (digitCount > 17) document.documentElement.style.setProperty('--digitsize1', '1.5rem');
-  if (digitCount >= 20) document.documentElement.style.setProperty('--digitsize1', '1.3rem');
+  if (digitCount > 19) document.documentElement.style.setProperty('--digitsize1', '1.3rem');
+  if (digitCount > 21) document.documentElement.style.setProperty('--digitsize1', '1.2rem');
 }
 
 function setDisplayOutput() {
@@ -275,11 +269,13 @@ function setDisplayOutput() {
     output1.textContent =  secondOperand.join('') || '0';
   }
 }
+
 function checkLimit() {
   try {
-    if (output1.textContent.length > 18 && !output1.textContent.includes('.') && !output1.textContent.includes('-')) throw funny.richLimit;
-    if (output1.textContent.length > 18 && !output1.textContent.includes('.') && output1.textContent.includes('-')) throw funny.poorLimit;
-    if (output1.textContent.length > 18 && output1.textContent.includes('.')) throw funny.improbabilityLimit;
+    let num = Number(firstOperand.join(''));
+    if (output1.textContent.includes('.') && output1.textContent.length > 23) throw funny.improbabilityLimit;
+    if (Number.isInteger(num) && num > Number.MAX_SAFE_INTEGER) throw funny.richLimit;
+    if (Number.isInteger(num) && num < Number.MIN_SAFE_INTEGER) throw funny.poorLimit;
   } catch(err) {
     errorFlag = true;
     displayError(err);
@@ -304,26 +300,26 @@ function handleKeys(ev) {
     case '+': case '-': case '*': case '/':
       if (!errorFlag) handleBasicOperators(pressedKey.value);
       break;
+    case 'root': case 'square':
+      if (!errorFlag) squareAndRoot(pressedKey.value);
+      break;
     case '%':
       if (!errorFlag) handlePercent();
-      break;
-    case 'Enter':
-      if (!errorFlag) operate();
-      break;
-    case 'Backspace':
-      clearEntry();
-      break;
-    case 'Delete':
-      delInput();
-      break;
-    case 'Escape':
-      clearOperation();
       break;
     case 'Backslash':
       if (!errorFlag) toggleNegative();
       break;
-    case 'root': case 'square':
-      if (!errorFlag) squareAndRoot(pressedKey.value);
+    case 'Enter':
+      if (!errorFlag) operate();
+      break;
+    case 'Delete':
+      delInput();
+      break;
+    case 'Backspace':
+      clearEntry();
+      break;
+    case 'Escape':
+      clearOperation();
       break;
   }
   if (!errorFlag) setDisplayOutput();
@@ -337,8 +333,9 @@ function handleKeys(ev) {
   console.log('zeroFlag: ' + zeroFlag);
   console.log('periodFlag: ' + periodFlag)
   console.log('resultFlag: ' + resultFlag)
+  console.log('maxVal: ' + Number.MAX_VALUE)
+  console.log('minVal: ' + Number.MIN_VALUE)
 }
 
 document.addEventListener('keydown', handleKeys);
 buttons.forEach( btn => btn.addEventListener('click', handleKeys));
-// Infinite Improbability Drive
