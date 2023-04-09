@@ -42,6 +42,54 @@ let [firstOperand, secondOperand, resumeOperand] = [[], [], []];
 let [currentOperator, nextOperator, resumeOperator] = [null, null, null];
 let [zeroFlag, periodFlag, resultFlag, errorFlag] = [true, false, false, false];
 
+function playAudio() {
+  const audio = document.querySelector('audio');
+  audio.currentTime = 0;
+  audio.play();
+}
+
+function clearOperation() {
+  [firstOperand, secondOperand, resumeOperand] = [[], [], []];
+  [currentOperator, nextOperator, resumeOperator] = [null, null, null];
+  [zeroFlag, periodFlag, resultFlag, errorFlag] = [true, false, false, false];
+  [output1.textContent, output2.textContent] = ['0', ''];
+  errorMessageAlignment.classList.remove('error');
+  document.documentElement.style.setProperty('--digitsize1', '2.2rem');
+  document.documentElement.style.setProperty('--digitsize2', '1.2rem');
+}  
+
+function clearEntry() {
+  if (secondOperand.length) {
+    secondOperand = [];
+    [zeroFlag, periodFlag] = [true, false];
+  }  
+  if (currentOperator) return;
+  clearOperation();
+}  
+
+function delInput() {
+  if (resultFlag && !currentOperator) {
+    clearOperation();
+  }  
+  if (secondOperand.length) {
+    if (secondOperand.length === 1) {
+      zeroFlag = true;
+    }  
+    let pf = secondOperand.pop();
+    periodFlag = pf === '.' ? false : periodFlag;
+  } else if (currentOperator) {
+    [currentOperator, resumeOperator] = [null, null]
+    [zeroFlag, resultFlag] = [true, false];
+    periodFlag = firstOperand.indexOf('.') === -1 ? false : true;
+  } else if (firstOperand.length) {
+    if (firstOperand.length === 1) {
+      zeroFlag = true;
+    }  
+    let pf = firstOperand.pop();
+    periodFlag = pf === '.' ? false : periodFlag;
+  }  
+}  
+
 function displayError(err) {
   errorMessageAlignment.classList.add('error');
   document.documentElement.style.setProperty('--digitsize1', '1.0rem');
@@ -50,60 +98,58 @@ function displayError(err) {
   output1.textContent = err.message;
 }
 
-function handleNumerals(operand) {
-  if (!firstOperand.length) {
-    if (operand === '0') return;
-    if (operand === '.') {
-      periodFlag = true;
-      firstOperand.push('0', '.');
-    } else {
-      firstOperand.push(operand);
-    }
-    zeroFlag = false;
-  } else if (firstOperand.length && !currentOperator) {
-    if (resultFlag && operand === '.') {
-      periodFlag = true;
-      firstOperand = ['0', '.'];
-      resultFlag = false;
-      resumeOperator = null;
-    } else if (resultFlag) {
-      if (operand === '0') {
-        firstOperand = [];
-        [periodFlag, zeroFlag] = [true, true];
-        resumeOperator = null;
-      } else {
-        firstOperand = [operand];
-        [periodFlag, zeroFlag] = [false, false];
-        resumeOperator = null;
-      }
-      resultFlag = false;
-    } else {
-      if (operand === '.') {
-        if (periodFlag) return;
-        periodFlag = true;
-      }
-      firstOperand.push(operand);
-    }
-  } else if (secondOperand.length) {
-    if (periodFlag && operand === '.') return;
-    if (operand === '.') {
-      periodFlag = true;
-    }
-    secondOperand.push(operand);
+function trimOperand() {
+  if (firstOperand.length > 16) {
+    let size = 16;
+    if (firstOperand[0] == '0' || firstOperand[0] ==  '-') size = 15;
+    firstOperand = Number(firstOperand.join('')).toPrecision(size).split('');
+  }  
+}
+
+function setFontSize(digitCount) {
+  if (digitCount <= 13) document.documentElement.style.setProperty('--digitsize1', '2.2rem');
+  if (digitCount > 13) document.documentElement.style.setProperty('--digitsize1', '1.9rem');
+  if (digitCount > 15) document.documentElement.style.setProperty('--digitsize1', '1.7rem');
+  if (digitCount > 17) document.documentElement.style.setProperty('--digitsize1', '1.5rem');
+  if (digitCount > 19) document.documentElement.style.setProperty('--digitsize1', '1.3rem');
+  if (digitCount > 21) document.documentElement.style.setProperty('--digitsize1', '1.2rem');
+}
+
+
+function setDisplayOutput() {
+  if (!currentOperator) {
+    setFontSize(firstOperand.length);
+    output2.textContent = '';
+    output1.textContent = firstOperand.join('') || '0';
   } else {
-    resultFlag = false;
-    if (operand === '0') {
-      secondOperand.push(operand, '.');
-      periodFlag = true;
-    } else if (operand === '.') {
-      secondOperand.push('0', operand);
-      periodFlag = true;
-    } else {
-      secondOperand.push(operand);
-    }
-    zeroFlag = false;
+    setFontSize(secondOperand.length);
+    output2.textContent = `${firstOperand.join('')} ${currentOperator}`;
+    output1.textContent =  secondOperand.join('') || '0';
   }
-  resumeOperand = firstOperand;
+}
+
+function checkLimit() {
+  try {
+    let num = Number(firstOperand.join(''));
+    if (output1.textContent.includes('.') && output1.textContent.length > 23) throw funny.improbabilityLimit;
+    if (Number.isInteger(num) && num > Number.MAX_SAFE_INTEGER) throw funny.richLimit;
+    if (Number.isInteger(num) && num < Number.MIN_SAFE_INTEGER) throw funny.poorLimit;
+  } catch(err) {
+    errorFlag = true;
+    displayError(err);
+    currentOperator = null;
+    resultFlag = true;
+  }
+}
+
+function toggleNegative() {
+  if(secondOperand.length) {
+    secondOperand[0] === '-' ? secondOperand.shift() : secondOperand.unshift('-');
+  } else if (firstOperand.length) {
+    firstOperand[0] === '-' ? firstOperand.shift() : firstOperand.unshift('-');
+  }
+  trimOperand();
+  setDisplayOutput();
 }
 
 function handlePercent() {
@@ -189,105 +235,67 @@ function handleBasicOperators(opr) {
   resumeOperator = currentOperator;
 }
 
-function toggleNegative() {
-  if(secondOperand.length) {
-    secondOperand[0] === '-' ? secondOperand.shift() : secondOperand.unshift('-');
-  } else if (firstOperand.length) {
-    firstOperand[0] === '-' ? firstOperand.shift() : firstOperand.unshift('-');
-  }
-  trimOperand();
-  setDisplayOutput();
-}
-
-function clearOperation() {
-  [firstOperand, secondOperand, resumeOperand] = [[], [], []];
-  [currentOperator, nextOperator, resumeOperator] = [null, null, null];
-  [zeroFlag, periodFlag, resultFlag, errorFlag] = [true, false, false, false];
-  [output1.textContent, output2.textContent] = ['0', ''];
-  errorMessageAlignment.classList.remove('error');
-  document.documentElement.style.setProperty('--digitsize1', '2.2rem');
-  document.documentElement.style.setProperty('--digitsize2', '1.2rem');
-}  
-
-function clearEntry() {
-  if (secondOperand.length) {
-    secondOperand = [];
-    [zeroFlag, periodFlag] = [true, false];
-  }  
-  if (currentOperator) return;
-  clearOperation();
-}  
-
-function delInput() {
-  if (resultFlag && !currentOperator) {
-    clearOperation();
-  }  
-  if (secondOperand.length) {
-    if (secondOperand.length === 1) {
-      zeroFlag = true;
-    }  
-    let pf = secondOperand.pop();
-    periodFlag = pf === '.' ? false : periodFlag;
-  } else if (currentOperator) {
-    [currentOperator, resumeOperator] = [null, null]
-    [zeroFlag, resultFlag] = [true, false];
-    periodFlag = firstOperand.indexOf('.') === -1 ? false : true;
-  } else if (firstOperand.length) {
-    if (firstOperand.length === 1) {
-      zeroFlag = true;
-    }  
-    let pf = firstOperand.pop();
-    periodFlag = pf === '.' ? false : periodFlag;
-  }  
-}  
-
-function trimOperand() {
-  if (firstOperand.length > 16) {
-    let size = 16;
-    if (firstOperand[0] == '0' || firstOperand[0] ==  '-') size = 15;
-    firstOperand = Number(firstOperand.join('')).toPrecision(size).split('');
-  }  
-}
-
-function setFontSize(digitCount) {
-  if (digitCount <= 13) document.documentElement.style.setProperty('--digitsize1', '2.2rem');
-  if (digitCount > 13) document.documentElement.style.setProperty('--digitsize1', '1.9rem');
-  if (digitCount > 15) document.documentElement.style.setProperty('--digitsize1', '1.7rem');
-  if (digitCount > 17) document.documentElement.style.setProperty('--digitsize1', '1.5rem');
-  if (digitCount > 19) document.documentElement.style.setProperty('--digitsize1', '1.3rem');
-  if (digitCount > 21) document.documentElement.style.setProperty('--digitsize1', '1.2rem');
-}
-
-function setDisplayOutput() {
-  if (!currentOperator) {
-    setFontSize(firstOperand.length);
-    output2.textContent = '';
-    output1.textContent = firstOperand.join('') || '0';
+function handleNumerals(operand) {
+  if (!firstOperand.length) {
+    if (operand === '0') return;
+    if (operand === '.') {
+      periodFlag = true;
+      firstOperand.push('0', '.');
+    } else {
+      firstOperand.push(operand);
+    }
+    zeroFlag = false;
+  } else if (firstOperand.length && !currentOperator) {
+    if (resultFlag && operand === '.') {
+      periodFlag = true;
+      firstOperand = ['0', '.'];
+      resultFlag = false;
+      resumeOperator = null;
+    } else if (resultFlag) {
+      if (operand === '0') {
+        firstOperand = [];
+        [periodFlag, zeroFlag] = [true, true];
+        resumeOperator = null;
+      } else {
+        firstOperand = [operand];
+        [periodFlag, zeroFlag] = [false, false];
+        resumeOperator = null;
+      }
+      resultFlag = false;
+    } else {
+      if (operand === '.') {
+        if (periodFlag) return;
+        periodFlag = true;
+      }
+      firstOperand.push(operand);
+    }
+  } else if (secondOperand.length) {
+    if (periodFlag && operand === '.') return;
+    if (operand === '.') {
+      periodFlag = true;
+    }
+    secondOperand.push(operand);
   } else {
-    setFontSize(secondOperand.length);
-    output2.textContent = `${firstOperand.join('')} ${currentOperator}`;
-    output1.textContent =  secondOperand.join('') || '0';
+    resultFlag = false;
+    if (operand === '0') {
+      secondOperand.push(operand, '.');
+      periodFlag = true;
+    } else if (operand === '.') {
+      secondOperand.push('0', operand);
+      periodFlag = true;
+    } else {
+      secondOperand.push(operand);
+    }
+    zeroFlag = false;
   }
-}
-
-function checkLimit() {
-  try {
-    let num = Number(firstOperand.join(''));
-    if (output1.textContent.includes('.') && output1.textContent.length > 23) throw funny.improbabilityLimit;
-    if (Number.isInteger(num) && num > Number.MAX_SAFE_INTEGER) throw funny.richLimit;
-    if (Number.isInteger(num) && num < Number.MIN_SAFE_INTEGER) throw funny.poorLimit;
-  } catch(err) {
-    errorFlag = true;
-    displayError(err);
-    currentOperator = null;
-    resultFlag = true;
-  }
+  resumeOperand = firstOperand;
 }
 
 function handleKeys(ev) {
   const pressedKey = document.querySelector(`button[data-key=${ev.code || this.dataset.key}]`);
   if(ev.code === 'Digit5' && !ev.shiftKey) return;
   if(!pressedKey) return;
+  playAudio();
   switch(pressedKey.value) {
     case '1': case '2': case '3': case '4':
     case '5': case '6': case '7': case '8':
@@ -323,18 +331,6 @@ function handleKeys(ev) {
       break;
   }
   if (!errorFlag) setDisplayOutput();
-  console.clear();
-  console.log('firstOpd: ' + firstOperand.join(''));
-  console.log('secondOpd: ' + secondOperand.join(''));
-  console.log('replaceOpd: ' + resumeOperand.join(''));
-  console.log('currOpr: ' + currentOperator);
-  console.log('nextOpr: ' + nextOperator);
-  console.log('replaceOpr: ' + resumeOperator);
-  console.log('zeroFlag: ' + zeroFlag);
-  console.log('periodFlag: ' + periodFlag)
-  console.log('resultFlag: ' + resultFlag)
-  console.log('maxVal: ' + Number.MAX_VALUE)
-  console.log('minVal: ' + Number.MIN_VALUE)
 }
 
 document.addEventListener('keydown', handleKeys);
