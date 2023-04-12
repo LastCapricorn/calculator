@@ -14,7 +14,7 @@ I also did some work on this project while I was on vacation.
 
   If it is the first line(first operand) a following operator also will disappear.
 
-- `&larr;` : the last sign will be deleted, can be repeated.
+- &larr; : the last sign will be deleted, can be repeated.
 
   If there's a result displayed, the result will be deleted.
 
@@ -29,9 +29,9 @@ I also did some work on this project while I was on vacation.
 
   or 125 \- 5% -> 118.75
 
-- `&radic;` : with first operand gives the corresponding result with both operands, the given operation will be executed and then the square root of the result will be displayed.
+- &radic; : with first operand gives the corresponding result with both operands, the given operation will be executed and then the square root of the result will be displayed.
 
-- `x&sup2;` : same as square root.
+- x&sup2; : same as square root.
 
 - `=` : immediately after an operator, takes the first operand also as second operand and provides the result.
 
