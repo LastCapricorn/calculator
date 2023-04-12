@@ -34,6 +34,7 @@ body {
   color: var(--default);
   height: 100vh;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   background-color: var(--bodybg);
@@ -49,6 +50,18 @@ body {
   var(--gradbg1), var(--gradbg2), var(--gradbg1), var(--gradbg0), transparent 50%, transparent,
   transparent 96.4%, var(--gradbg0));
 }
+
+#credits {
+  width: 320px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  text-align: right;
+  padding-right: 1rem;
+  color: var(--graddev1);
+}
+
+#credits a:link { color: inherit;}
+#credits a:visited { color: inherit;}
 
 #case {
   background-image: repeating-linear-gradient(var(--graddev0) 0px, var(--graddev0) 2px, var(--graddev1) 2px, var(--graddev1) 4px);
