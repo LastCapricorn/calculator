@@ -198,6 +198,7 @@
     if (resultFlag) clearOperation();
     if (secondOperand) {
       secondOperand = secondOperand.slice(0,secondOperand.length-1);
+      if (Number(secondOperand) === 0) secondOperand = '';
       zeroFlag = (secondOperand.length === 2 && secondOperand[0] === '0') || secondOperand.length === 1;
       periodFlag = secondOperand.indexOf('.') > -1;
     } else if (currentOperator) {
@@ -206,6 +207,7 @@
       periodFlag = firstOperand.indexOf('.') > -1;
     } else if (firstOperand) {
       firstOperand = firstOperand.slice(0,firstOperand.length-1);
+      if (Number(firstOperand) === 0) firstOperand = '';
       zeroFlag = (firstOperand.length === 2 && firstOperand[0] === '0') || firstOperand.length === 1;
       periodFlag = firstOperand.indexOf('.') > -1;
     }
