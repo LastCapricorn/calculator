@@ -30,11 +30,11 @@
   };
 
   const calc = {
-    '+' : (prev, curr) => prev + curr,
-    '-' : (prev, curr) => prev - curr,
-    '*' : (prev, curr) => prev * curr,
-    '/' : (prev, curr) => prev / curr,
-    '%' : (curr) => curr / 100,
+    '+' : (summand1, summand2) => summand1 + summand2,
+    '-' : (minuend, subtrahend) => minuend - subtrahend,
+    '*' : (factor1, factor2) => factor1 * factor2,
+    '/' : (dividend, divisor) => dividend / divisor,
+    '%' : (parts) => parts / 100,
     square : (base) => base ** 2,
     root : (radicand) => Math.sqrt(radicand),
   };
@@ -46,7 +46,7 @@
 
   let [firstOperand, secondOperand, resumeOperand] = ['', '', ''];
   let [currentOperator, nextOperator, resumeOperator] = ['', '', ''];
-  let [zeroFlag, periodFlag, resultFlag, errorFlag] = [true, false, false, false];
+  let [periodFlag, resultFlag, errorFlag] = [false, false, false];
 
   function operate() {
     if (!currentOperator) {
@@ -140,7 +140,7 @@
       }
       periodFlag = secondOperand.indexOf('.') > -1;
     }
-    [zeroFlag, resultFlag] = [false, false];
+    resultFlag = false;
     resumeOperand = firstOperand;
   }
 
@@ -199,16 +199,14 @@
     if (secondOperand) {
       secondOperand = secondOperand.slice(0,secondOperand.length-1);
       if (Number(secondOperand) === 0) secondOperand = '';
-      zeroFlag = (secondOperand.length === 2 && secondOperand[0] === '0') || secondOperand.length === 1;
       periodFlag = secondOperand.indexOf('.') > -1;
     } else if (currentOperator) {
       [currentOperator, resumeOperator] = ['', ''];
-      [zeroFlag, resultFlag] = [false, false];
+      resultFlag = false;
       periodFlag = firstOperand.indexOf('.') > -1;
     } else if (firstOperand) {
       firstOperand = firstOperand.slice(0,firstOperand.length-1);
       if (Number(firstOperand) === 0) firstOperand = '';
-      zeroFlag = (firstOperand.length === 2 && firstOperand[0] === '0') || firstOperand.length === 1;
       periodFlag = firstOperand.indexOf('.') > -1;
     }
   }
@@ -216,7 +214,7 @@
   function clearEntry() {
     if (secondOperand) {
       secondOperand = '';
-      [zeroFlag, periodFlag] = [true, false];
+      periodFlag = false;
     }    
     if (currentOperator) return;
     clearOperation();
@@ -225,7 +223,7 @@
   function clearOperation() {
     [firstOperand, secondOperand, resumeOperand] = ['', '', ''];
     [currentOperator, nextOperator, resumeOperator] = ['', '', ''];
-    [zeroFlag, periodFlag, resultFlag, errorFlag] = [true, false, false, false];
+    [periodFlag, resultFlag, errorFlag] = [false, false, false];
     [currOut.textContent, prevOut.textContent] = ['', ''];
     alignErrorMsg.classList.remove('error');
     setFontSize();
