@@ -20,29 +20,29 @@
         <p id="curr-output">0</p>
       </div>
       <div id="keypad">
-        <button data-key="Digit5" value="%" class="blue">%</button>
-        <button data-key="Backspace" value="Backspace" title="&larr;" class="red">CE</button>
-        <button data-key="Escape" value="Escape" title="esc" class="red">C</button>
-        <button data-key="Delete" value="Delete" title="del" class="red">&#8678;</button>
-        <button data-key="BracketLeft" value="root" title="&lbrack;&emsp13;&verbar;&emsp13;&Uuml;" class="blue">&radic;</button>
-        <button data-key="BracketRight" value="square" title="&rbrack;&emsp13;&verbar;&emsp13;&plus;" class="blue">x&sup2;</button>
-        <button data-key="NumpadDivide" value="/" title="numpad" class="blue">&div;</button>
-        <button data-key="NumpadMultiply" value="*" title="numpad" class="blue">&times;</button>
-        <button data-key="Numpad7" value="7" title="numpad" class="orange">7</button>
-        <button data-key="Numpad8" value="8" title="numpad" class="orange">8</button>
-        <button data-key="Numpad9" value="9" title="numpad" class="orange">9</button>
-        <button data-key="NumpadSubtract" value="-" title="numpad" class="blue">&minus;</button>
-        <button data-key="Numpad4" value="4" title="numpad" class="orange">4</button>
-        <button data-key="Numpad5" value="5" title="numpad" class="orange">5</button>
-        <button data-key="Numpad6" value="6" title="numpad" class="orange">6</button>
-        <button data-key="NumpadAdd" value="+" title="numpad" class="blue">&plus;</button>
-        <button data-key="Numpad1" value="1" title="numpad" class="orange">1</button>
-        <button data-key="Numpad2" value="2" title="numpad" class="orange">2</button>
-        <button data-key="Numpad3" value="3" title="numpad" class="orange">3</button>
-        <button data-key="NumpadEnter" value="Enter" title="numpad" class="green">&equals;</button>
-        <button data-key="Backslash" value="Backslash" title="&Backslash;&emsp13;&verbar;&emsp13;#" class="green">&PlusMinus;</button>
-        <button data-key="Numpad0" value="0" title="numpad" class="orange">0</button>
-        <button data-key="NumpadDecimal" value="." title="numpad" class="green">&period;</button>
+        <button data-key="Digit5" data-fnc="percent" value="%" class="blue">%</button>
+        <button data-key="Backspace" data-fnc="clearEntry" value="Backspace" title="&larr;" class="red">CE</button>
+        <button data-key="Escape" data-fnc="clearOperation" value="Escape" title="esc" class="red">C</button>
+        <button data-key="Delete" data-fnc="delInput" value="Delete" title="del" class="red">&#8678;</button>
+        <button data-key="BracketLeft" data-fnc="squareAndRoot" value="root" title="&lbrack;&emsp13;&verbar;&emsp13;&Uuml;" class="blue">&radic;</button>
+        <button data-key="BracketRight" data-fnc="squareAndRoot" value="square" title="&rbrack;&emsp13;&verbar;&emsp13;&plus;" class="blue">x&sup2;</button>
+        <button data-key="NumpadDivide" data-fnc="basicOperators" value="/" title="numpad" class="blue">&div;</button>
+        <button data-key="NumpadMultiply" data-fnc="basicOperators" value="*" title="numpad" class="blue">&times;</button>
+        <button data-key="Numpad7" data-fnc="numerals" value="7" title="numpad" class="orange">7</button>
+        <button data-key="Numpad8" data-fnc="numerals" value="8" title="numpad" class="orange">8</button>
+        <button data-key="Numpad9" data-fnc="numerals" value="9" title="numpad" class="orange">9</button>
+        <button data-key="NumpadSubtract" data-fnc="basicOperators" value="-" title="numpad" class="blue">&minus;</button>
+        <button data-key="Numpad4" data-fnc="numerals" value="4" title="numpad" class="orange">4</button>
+        <button data-key="Numpad5" data-fnc="numerals" value="5" title="numpad" class="orange">5</button>
+        <button data-key="Numpad6" data-fnc="numerals" value="6" title="numpad" class="orange">6</button>
+        <button data-key="NumpadAdd" data-fnc="basicOperators" value="+" title="numpad" class="blue">&plus;</button>
+        <button data-key="Numpad1" data-fnc="numerals" value="1" title="numpad" class="orange">1</button>
+        <button data-key="Numpad2" data-fnc="numerals" value="2" title="numpad" class="orange">2</button>
+        <button data-key="Numpad3" data-fnc="numerals" value="3" title="numpad" class="orange">3</button>
+        <button data-key="NumpadEnter" data-fnc="operate" value="Enter" title="numpad" class="green">&equals;</button>
+        <button data-key="Backslash" data-fnc="toggleMinus" value="Backslash" title="&Backslash;&emsp13;&verbar;&emsp13;#" class="green">&PlusMinus;</button>
+        <button data-key="Numpad0" data-fnc="numerals" value="0" title="numpad" class="orange">0</button>
+        <button data-key="NumpadDecimal" data-fnc="numerals" value="." title="numpad" class="green">&period;</button>
       </div>
     </div>
     <div id="credits">Sound Effect from <a href="https://pixabay.com/?utm_source=link-attribution&amp;utm_medium=referral&amp;utm_campaign=music&amp;utm_content=101351" target="_blank">Pixabay</a></div>
